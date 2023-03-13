@@ -56,6 +56,12 @@ impl Peer {
                     _ => {}
                 }
             },
+            State::Connect => match event {
+                Event::TcpConnectionConfirmed => {
+                    self.state = State::OpenSent
+                },
+                _ => {}
+            }
             _ => {}
         }
     }
