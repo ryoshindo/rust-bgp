@@ -5,6 +5,7 @@ use crate::event::Event;
 use crate::event_queue::{EventQueue, self};
 use crate::state::State;
 use crate::connection::Connection;
+use crate::packets::message::Message;
 
 #[derive(Debug)]
 pub struct Peer {
@@ -58,6 +59,14 @@ impl Peer {
             },
             State::Connect => match event {
                 Event::TcpConnectionConfirmed => {
+                    self.tcp_connection
+                        .as_mut()
+                        .expect("TCP Connectionが確立できていません。")
+                        .send(Message::new_open(
+                            self.config.local_as,
+                            self.config.local_ip,
+                        ))
+                        .await;
                     self.state = State::OpenSent
                 },
                 _ => {}
